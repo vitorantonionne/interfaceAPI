@@ -1,28 +1,51 @@
 const users = [];
-async function userGitResponse(username) {
+async function userGit(username) {
     const urlAPI = `https://api.github.com/users/${username}`;
     const response = await fetch(urlAPI);
     const user = await response.json();
     if (user.message) {
-        console.log('Usuário não encontrado');
+        console.log('Usuário não encontrado...');
     }
     else {
         users.push(user);
-        console.log(`Usuário encontrado
-                  \nid: ${user.id}
-                  \nlogin: ${user.login}
-                  \nNome: ${user.name}
-                  \nBio: ${user.bio}
-                  \nRepositórios públicos: ${user.public_repos}`);
+        console.log(`Usuário salvo -----
+                \nId: ${user.id}
+                \nLogin: ${user.login}
+                \nNome: ${user.name}
+                \nBio: ${user.bio}
+                \nRepositório Públicos: ${user.public_repos}             
+    `);
     }
 }
-async function showUser(username) {
-    const urlAPI = `https://api.github.com/users/${username}/repos`;
-    const response = await fetch(urlAPI);
-    const reposUser = await response[0].json();
-    console.log(`Perfil de repositórios de usuário
-              \nNome: ${reposUser.name}
-              \nDescrição: ${reposUser.description}
-              \nForks: ${reposUser.fork}`);
+async function userGitResponse(username) {
+    const user = users.find(user => user.login === username);
+    if (typeof user === 'undefined') {
+        console.log('Usuário não encontrado');
+    }
+    else {
+        const response = await fetch(user.repos_url);
+        const userRepos = await response.json();
+        let message = `Id: ${user.id}
+                      \nLogin: ${user.login}
+                      \nNome: ${user.name}
+                      \nBio: ${user.bio}
+                      \nRepositório Públicos: ${user.public_repos}`;
+        userRepos.forEach(repos => message += `\nNome: ${repos.name}
+                   \nDescrição: ${repos.description}
+                   \nEstrelas: ${repos.stargazers_count}
+                   \nÉ um fork: ${repos.fork}
+      `);
+    }
 }
-showUser('vitorantonionne');
+function usersList() {
+    let message = '';
+    users.forEach((personUser) => {
+        message += `
+            \nId: ${personUser.id}
+            \nlogin: ${personUser.login}
+            \nNome: ${personUser.name}
+            \nBio: ${personUser.bio}
+            \nRepositórios públicos: ${personUser.public_repos}
+    `;
+    });
+}
