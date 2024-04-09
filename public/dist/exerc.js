@@ -16,4 +16,13 @@ async function userGitResponse(username) {
                   \nRepositórios públicos: ${user.public_repos}`);
     }
 }
-userGitResponse('vitorantonionne');
+async function showUser(username) {
+    const urlAPI = `https://api.github.com/users/${username}/repos`;
+    const response = await fetch(urlAPI);
+    const reposUser = await response[0].json();
+    console.log(`Perfil de repositórios de usuário
+              \nNome: ${reposUser.name}
+              \nDescrição: ${reposUser.description}
+              \nForks: ${reposUser.fork}`);
+}
+showUser('vitorantonionne');

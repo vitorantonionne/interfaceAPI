@@ -8,7 +8,7 @@ interface propUserGitHub {
   message?: "Not Found"
 }
 
-interface GitHubRepoResponse {
+interface gitHubRepoResponse {
   name: string
   description: string
   fork: boolean
@@ -18,21 +18,26 @@ interface GitHubRepoResponse {
 const users: propUserGitHub[] = []
 
 async function userGitResponse(username: string) {
-  const urlAPI = `https://api.github.com/users/${username}`
-  const response = await fetch(urlAPI)
-  const user: propUserGitHub = await response.json()
+  const user = users.find(user => user.login === username)
 
-  if (user.message) {
-    console.log('Usuário não encontrado')
+  if(typeof user === 'undefined') {
+    console.log('Usuário não encontrado');
   } else {
-    users.push(user)
+    const  response = await fetch(user.repos_url)
+    const userRepos: gitHubRepoResponse[] = await response.json()
 
-    console.log(`Usuário encontrado
-                  \nid: ${user.id}
-                  \nlogin: ${user.login}
-                  \nNome: ${user.name}
-                  \nBio: ${user.bio}
-                  \nRepositórios públicos: ${user.public_repos}`
-    );
+    let message = `Id: ${user.id}
+                      \nLogin: ${user.login}
+                      \nNome: ${user.name}
+                      \nBio: ${user.bio}
+                      \nRepositório Públicos: ${user.public_repos}`
+    
+    userRepos.forEach(repos =>
+      message +=  `\nNome: ${repos.name}
+                   \nDescrição: ${repos.description}
+                   \nEstrelas: ${repos.stargazers_count}
+                   \nÉ um fork: ${repos.fork}
+      `
+    )
   }
 } 
